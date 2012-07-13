@@ -12,6 +12,8 @@ class Malam_Menu
 
     protected $_items           = array();
 
+    protected $_attributes      = array();
+
     public static function factory($section = Menu::DEFAULT_SECTION)
     {
         return new Menu($section);
@@ -22,14 +24,21 @@ class Malam_Menu
         $_items = (is_array($section))
             ? $section
             : Kohana::$config->load("menu.{$section}");
-        
+
+        if (isset($_items['attributes']))
+        {
+            $this->_attributes = $_items['attributes'];
+
+            unset($_items['attributes']);
+        }
+
         foreach ($_items as $item)
         {
             if (isset($item['title']) && isset($item['url']))
             {
                 $attributes = Arr::get($item, 'attributes');
                 $children   = Arr::get($item, 'children');
-                
+
                 $this->add($item['title'], $item['url'], $attributes, $children);
             }
         }
@@ -48,12 +57,15 @@ class Malam_Menu
         }
         elseif (! Valid::url($url))
         {
-            try {
-                $url = Route::get($url)->uri();
-            }
-            catch (Kohana_Exception $e)
+            if ($url[0] !== '#')
             {
-                $url = URL::site($url);
+                try {
+                    $url = Route::get($url)->uri();
+                }
+                catch (Kohana_Exception $e)
+                {
+                    $url = URL::site($url);
+                }
             }
         }
 
@@ -89,10 +101,18 @@ class Malam_Menu
             $has_children = isset($item['children']);
 
             $class = array();
+            $attributes = array();
 
-            if (isset($item['attributes']) && isset($item['attributes']['class']))
+            if (isset($item['attributes']))
             {
-                $class = explode(' ', $item['attributes']['class']);
+                if (isset($item['attributes']['class']))
+                {
+                    $class = explode(' ', $item['attributes']['class']);
+
+                    unset($item['attributes']['class']);
+                }
+
+                $attributes = $item['attributes'];
             }
 
             $has_children && $class[] = 'parent';
@@ -105,10 +125,10 @@ class Malam_Menu
             {
                 $class[] = 'active';
             }
-            
-            $class = array('class' => join(' ', array_unique($class)));
-            
-            $menu .= '<li'.HTML::attributes($class).'>'.HTML::anchor($item['url'], $item['title']);
+
+            $attributes += array('class' => join(' ', array_unique($class)));
+
+            $menu .= '<li'.HTML::attributes($attributes).'>'.HTML::anchor($item['url'], $item['title']);
             $menu .= $has_children ? $item['children']->render() : '';
             $menu .= '</li>';
 
@@ -130,7 +150,7 @@ class Malam_Menu
         {
             $items = $items->get_items();
         }
-        
+
         foreach ($items as $item)
         {
             if (($search_url == $item['url'])
