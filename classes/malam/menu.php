@@ -94,7 +94,7 @@ class Malam_Menu
 
     public function render()
     {
-        $menu = '<ul>';
+        $menu = '<ul'.HTML::attributes($this->_attributes).'>';
 
         foreach ($this->get_items() as $item)
         {
