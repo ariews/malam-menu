@@ -89,7 +89,7 @@ class Malam_Menu
 
     protected function current_uri()
     {
-        return Request::initial()->uri();
+        return URL::site(Request::initial()->uri());
     }
 
     public function render()
