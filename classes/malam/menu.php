@@ -75,7 +75,7 @@ class Malam_Menu
         return $this;
     }
 
-    private function current_uri()
+    protected function current_uri()
     {
         return Request::initial()->uri();
     }
@@ -124,7 +124,7 @@ class Malam_Menu
         return $this->render();
     }
 
-    private static function search_match_url($search_url, $items)
+    protected static function search_match_url($search_url, $items)
     {
         if ($items instanceof Menu)
         {
