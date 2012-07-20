@@ -75,7 +75,7 @@ class Malam_Menu
             if ($url[0] !== '#')
             {
                 try {
-                    $url = Route::get($url)->uri();
+                    $url = Route::get($url)->uri($params);
                 }
                 catch (Kohana_Exception $e)
                 {
