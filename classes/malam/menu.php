@@ -38,8 +38,9 @@ class Malam_Menu
             {
                 $attributes = Arr::get($item, 'attributes');
                 $children   = Arr::get($item, 'children');
+                $params     = Arr::get($item, 'params');
 
-                $this->add($item['title'], $item['url'], $attributes, $children);
+                $this->add($item['title'], $item['url'], $attributes, $children, $params);
             }
         }
     }
@@ -49,7 +50,21 @@ class Malam_Menu
         return $this->_items;
     }
 
-    public function add($title, $url, array $attributes = NULL, $children = NULL)
+    public function add_attributes($key, $value)
+    {
+        if (! is_array($value))
+            $value = exp(' ', $value);
+
+        if (isset($this->_attributes[$key]))
+        {
+            $_value = explode(' ', $this->_attributes[$key]);
+            $value = array_merge($_value, $value);
+        }
+
+        $this->_attributes[$key] = join(' ', $value);
+    }
+
+    public function add($title, $url, array $attributes = NULL, array $children = NULL, array $params = NULL)
     {
         if ($url instanceof Route)
         {
