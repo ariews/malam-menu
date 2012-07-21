@@ -68,7 +68,7 @@ class Malam_Menu
     {
         if ($url instanceof Route)
         {
-            $url = $url->uri();
+            $url = $url->uri($params);
         }
         elseif (! Valid::url($url))
         {
@@ -78,11 +78,11 @@ class Malam_Menu
                     $url = Route::get($url)->uri($params);
                 }
                 catch (Kohana_Exception $e)
-                {
-                    $url = URL::site($url);
-                }
+                {}
             }
         }
+
+        $url = URL::site($url);
 
         if (NULL !== $children)
         {
