@@ -66,23 +66,21 @@ class Malam_Menu
 
     public function add($title, $url, array $attributes = NULL, array $children = NULL, array $params = NULL)
     {
-        if ($url instanceof Route)
+        if (! ($url instanceof Route) && ! Valid::url($url) && ! in_array($url[0], array('/', '#')))
         {
-            $url = $url->uri($params);
-        }
-        elseif (! Valid::url($url))
-        {
-            if ($url[0] !== '#')
-            {
-                try {
-                    $url = Route::get($url)->uri($params);
-                }
-                catch (Kohana_Exception $e)
-                {}
-            }
+            try { $url = Route::get($url); }
+            catch (Exception $e) {}
         }
 
-        $url = URL::site($url);
+        // rematch
+        if (! ($url instanceof Route))
+        {
+            if ($url[0] != '#')
+            {
+                $url = ltrim($url, '/');
+                $url = URL::site($url, TRUE);
+            }
+        }
 
         if (NULL !== $children)
         {
@@ -97,14 +95,10 @@ class Malam_Menu
             'url'       => $url,
             'children'  => $children,
             'attributes'=> $attributes,
+            'params'    => $params,
         );
 
         return $this;
-    }
-
-    protected function current_uri()
-    {
-        return URL::site(Request::initial()->uri());
     }
 
     public function render()
@@ -115,15 +109,13 @@ class Malam_Menu
         {
             $has_children = isset($item['children']);
 
-            $class = array();
-            $attributes = array();
+            $class = $attributes = array();
 
             if (isset($item['attributes']))
             {
                 if (isset($item['attributes']['class']))
                 {
                     $class = explode(' ', $item['attributes']['class']);
-
                     unset($item['attributes']['class']);
                 }
 
@@ -132,21 +124,20 @@ class Malam_Menu
 
             $has_children && $class[] = 'parent';
 
-            if ($this->current_uri() == $item['url'])
+            if (self::check_for_matching_url($item['url']))
             {
                 $class = array_merge($class, array('active', 'current'));
             }
-            elseif ($has_children && self::search_match_url($this->current_uri(), $item['children']))
+            elseif ($has_children && self::search_match_url($item['children']))
             {
                 $class[] = 'active';
             }
 
             $attributes += array('class' => join(' ', array_unique($class)));
 
-            $menu .= '<li'.HTML::attributes($attributes).'>'.HTML::anchor($item['url'], $item['title']);
+            $menu .= '<li'.HTML::attributes($attributes).'>'.HTML::anchor(self::to_url($item), $item['title']);
             $menu .= $has_children ? $item['children']->render() : '';
             $menu .= '</li>';
-
         }
 
         $menu .= '</ul>';
@@ -156,10 +147,34 @@ class Malam_Menu
 
     public function __toString()
     {
-        return $this->render();
+        try { return $this->render(); } catch (Exception $e) { return ''; }
     }
 
-    protected static function search_match_url($search_url, $items)
+    public static function to_url($item)
+    {
+        $url = $item['url'];
+        if ($url instanceof Route)
+        {
+            $url = $url->uri($item['params']);
+        }
+
+        return $url;
+    }
+
+    protected static function check_for_matching_url($url)
+    {
+        if (( is_string($url) && Valid::url($url) && Request::current()->url() == $url)
+                OR
+            ( $url instanceof Route && $url->matches(Request::current()->uri()) )
+        )
+        {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    protected static function search_match_url($items)
     {
         if ($items instanceof Menu)
         {
@@ -168,13 +183,7 @@ class Malam_Menu
 
         foreach ($items as $item)
         {
-            if (($search_url == $item['url'])
-                OR
-                (isset($item['children']) && self::search_match_url($search_url, $item['children']))
-            )
-            {
-                return TRUE;
-            }
+            return self::check_for_matching_url($item['url']);
         }
 
         return FALSE;
