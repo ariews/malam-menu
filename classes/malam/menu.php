@@ -78,7 +78,7 @@ class Malam_Menu
             if ($url[0] != '#')
             {
                 $url = ltrim($url, '/');
-                $url = URL::site($url, TRUE);
+                $url = URL::site($url);
             }
         }
 
