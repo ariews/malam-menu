@@ -50,7 +50,7 @@ class Malam_Menu
         return $this->_items;
     }
 
-    public function add_attributes($key, $value)
+    public function add_attribute($key, $value)
     {
         if (! is_array($value))
             $value = exp(' ', $value);
@@ -62,6 +62,16 @@ class Malam_Menu
         }
 
         $this->_attributes[$key] = join(' ', $value);
+
+        return $this;
+    }
+
+    public function add_attributes(array $attributes)
+    {
+        foreach ($attributes as $key => $value)
+        {
+            $this->add_attribute($key, $value);
+        }
 
         return $this;
     }
