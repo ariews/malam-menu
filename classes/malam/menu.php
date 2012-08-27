@@ -53,7 +53,7 @@ class Malam_Menu
     public function add_attribute($key, $value)
     {
         if (! is_array($value))
-            $value = exp(' ', $value);
+            $value = explode(' ', $value);
 
         if (isset($this->_attributes[$key]))
         {
