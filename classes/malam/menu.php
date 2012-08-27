@@ -62,6 +62,8 @@ class Malam_Menu
         }
 
         $this->_attributes[$key] = join(' ', $value);
+
+        return $this;
     }
 
     public function add($title, $url, array $attributes = NULL, array $children = NULL, array $params = NULL)
