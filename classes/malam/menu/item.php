@@ -52,7 +52,7 @@ class Malam_Menu_Item
         $this->init();
     }
 
-    private function init()
+    protected function init()
     {
         if ($this->has_children())
         {

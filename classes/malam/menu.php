@@ -38,7 +38,7 @@ class Malam_Menu
         $this->respawn(Request::current()->uri());
     }
 
-    private function respawn($url)
+    protected function respawn($url)
     {
         $this->items = array();
 
