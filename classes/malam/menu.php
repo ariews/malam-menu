@@ -79,6 +79,12 @@ class Malam_Menu
         return $this;
     }
 
+    public function set_current($uri)
+    {
+        $this->respawn($uri);
+        return $this;
+    }
+
     public function render($template = NULL)
     {
         if (NULL === $template)
