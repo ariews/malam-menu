@@ -8,12 +8,13 @@ defined('SYSPATH') or die('No direct script access.');
  */
 
 /* @var $items array */
+/* @var $attributes array */
 
 ?><ul <?php echo HTML::attributes($attributes); ?>><?php
 
 foreach ($items as $item)
 {
-    /* @var $item Mymenu_Item */
+    /* @var $item Menu_Item */
 
     ?>
     <li <?php echo HTML::attributes($item->attributes()); ?>>
