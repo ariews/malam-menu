@@ -28,7 +28,7 @@ class Malam_Menu_Item
      *
      * @var string
      */
-    protected $current      = NULL;
+    protected $current;
 
     /**
      * menu item
@@ -57,7 +57,8 @@ class Malam_Menu_Item
         if ($this->has_children())
         {
             $child = Menu::factory($this->children(), $this)
-                    ->set_theme(Menu::$theme);
+                    ->set_theme(Menu::$theme)
+                    ->set_current($this->current);
 
             $this->set_children($child);
         }
