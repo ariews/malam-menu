@@ -21,6 +21,7 @@ config:
                 'title'     => __('Create new post'),
                 'url'       => 'admin-post',                // route name
                 'params'    => array('action' => 'create'), // with params
+                'acl'       => 'can_create_celebrity',
             ),
         ),
     );

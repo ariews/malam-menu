@@ -44,8 +44,19 @@ class Malam_Menu
 
         foreach ($this->section as $sec)
         {
-            $this->items[] = new Menu_Item($sec, $this->parent, ltrim($url, '/'));
+            $sec += array('acl' => NULL);
+            $acl = Arr::get($sec, 'acl');
+
+            if (NULL === $acl || TRUE === $this->check_acl($acl))
+            {
+                $this->items[] = new Menu_Item($sec, $this->parent, ltrim($url, '/'));
+            }
         }
+    }
+
+    public function check_acl($acl)
+    {
+        return TRUE;
     }
 
     public function set_theme($theme)
