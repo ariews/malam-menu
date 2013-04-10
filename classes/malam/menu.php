@@ -33,6 +33,7 @@ class Malam_Menu
         if (isset($section['attributes']))
         {
             $this->attributes = $section['attributes'];
+            unset($this->section['attributes']);
         }
 
         $this->respawn(Request::current()->uri());
