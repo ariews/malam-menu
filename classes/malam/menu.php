@@ -50,9 +50,19 @@ class Malam_Menu
 
             if (NULL === $acl || TRUE === $this->check_acl($acl))
             {
-                $this->items[] = new Menu_Item($sec, $this->parent, ltrim($url, '/'));
+                $this->add_item($sec, $this->parent, ltrim($url, '/'));
             }
         }
+    }
+
+    public function add_item(array $item, $parent = NULL, $current = NULL)
+    {
+        $this->items[] = new Menu_Item($item, $parent, $current);
+    }
+
+    public function get_items()
+    {
+        return $this->items;
     }
 
     public function check_acl($acl)
